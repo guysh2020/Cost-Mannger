@@ -11,6 +11,6 @@ public interface IModel {
 
     public void SortItems() throws CostMannagerException;
 
-//    public void fromDB() throws CostMannagerException;
-//    public void toDB() throws CostMannagerException;
+//    public void fromDB() throws CostManagerException;
+//    public void toDB() throws CostManagerException;
 }
