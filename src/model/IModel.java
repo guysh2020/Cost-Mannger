@@ -1,16 +1,31 @@
 package model;
 
+import java.sql.Date;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 public interface IModel {
 
-    public void AddCost() throws CostManagerException;
-    public void DeleteCost() throws CostManagerException;
-    public void AddCategory() throws CostManagerException;
+    public boolean addCost(CostItem cost) throws CostManagerException;
+    public boolean deleteCost(int id) throws CostManagerException, SQLException;
+    public boolean addCategory(Category c) throws CostManagerException;
 
-    public void GeneratePieSummary() throws CostManagerException;
-    public void GenerateRegularSummary() throws CostManagerException;
+    // check if we want a date of util or date of sql || if dates not defined bring all
+//    public void getCostsBetweenDates(Date start, Date end) throws CostManagerException;
+//    public void getAllCosts() throws CostManagerException;
 
-    public void SortItems() throws CostManagerException;
+    public ArrayList<CostItem> getCosts(Date start, Date end) throws CostManagerException;
+    public ArrayList<CostItem> getCosts(String query) throws CostManagerException;
+    public ArrayList<Category> getCategories() throws CostManagerException;
+    public boolean checkIfCategoryExist(Category c) throws CostManagerException;
 
-//    public void fromDB() throws CostManagerException;
-//    public void toDB() throws CostManagerException;
+
+
+
 }
+
+
+// view-model
+//    public void GeneratePieSummary() throws CostManagerException;
+//    public void GenerateRegularSummary() throws CostManagerException;
+//    public void SortItems() throws CostManagerException;
