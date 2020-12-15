@@ -9,10 +9,9 @@ public interface IModel {
     public boolean addCost(CostItem cost) throws CostManagerException;
     public boolean deleteCost(int id) throws CostManagerException, SQLException;
     public boolean addCategory(Category c) throws CostManagerException;
-
     // check if we want a date of util or date of sql || if dates not defined bring all
-//    public void getCostsBetweenDates(Date start, Date end) throws CostManagerException;
-//    public void getAllCosts() throws CostManagerException;
+    // public void getCostsBetweenDates(Date start, Date end) throws CostManagerException;
+    // public void getAllCosts() throws CostManagerException;
 
     public ArrayList<CostItem> getCosts(Date start, Date end) throws CostManagerException;
     public ArrayList<CostItem> getCosts(String query) throws CostManagerException;
