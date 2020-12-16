@@ -33,11 +33,8 @@ public class DerbyDBModel implements IModel {
         } catch (SQLException se) {
             if (((se.getErrorCode() == 50000) && ("XJ015".equals(se.getSQLState())))) {
                 System.out.println("Derby shut down normally");
-
             } else {
-
                 System.out.println("Derby did not shut down normally");
-//                printSQLException(se);
             }
         }
 
@@ -140,12 +137,6 @@ public class DerbyDBModel implements IModel {
             rs = st.executeQuery(query);
             while (rs.next()) {
                 ans.add(new CostItem(rs.getInt(1), rs.getDate(2), rs.getString(3), rs.getString(4), rs.getDouble(5), rs.getString(6)));
-//                System.out.println(rs.getInt(1));           // id
-//                System.out.println(rs.getDate(2));          // date
-//                System.out.println(rs.getString(3));        // category
-//                System.out.println(rs.getString(4));        // currency
-//                System.out.println(rs.getDouble(5));        // sum
-//                System.out.println(rs.getString(6));        // desc
             }
         } catch (SQLException sqle) {
             throw new CostManagerException("problem getting all costs from derbyDB", sqle);
@@ -189,15 +180,17 @@ public class DerbyDBModel implements IModel {
 
     @Override
     public boolean checkIfCategoryExist(Category c) throws CostManagerException {
-//        try {
-//            rs = st.executeQuery("SELECT * FROM category where name LIKE " + c.toString());
-//
-//            if(!rs.next())
-//                return true;
-//            else
-//                return false;
-//        } catch (SQLException sqle) {
-//            throw new CostManagerException("problem getting all categories from derbyDB", sqle);
-//        }
+        try {
+            // categories saved at database in upper
+            String query = "SELECT * FROM category WHERE name ='"+c.toString().toUpperCase()+"'" ;
+            rs = st.executeQuery(query);
+
+            if(!rs.next())
+                return true;
+            else
+                return false;
+        } catch (SQLException sqle) {
+            throw new CostManagerException("problem fetching categories from derbyDB", sqle);
+        }
     }
 }

@@ -11,13 +11,14 @@ public class Main {
 //        CostItem c = new CostItem(Date.valueOf("2019-10-12"), "gas", "ILS", 33.7, "good burger");
 //        d.addCost(c);
         Category cat = new Category("gas");
+//
         if(d.checkIfCategoryExist(cat))
             System.out.println("exist");
         else
             System.out.println("dosent exist");
 
-//        d.addCategory(cat);
-//
+        d.addCategory(cat);
+
 //        ArrayList<CostItem> a = d.getCosts("");
 //        ArrayList<Category> b = d.getCategories();
 //

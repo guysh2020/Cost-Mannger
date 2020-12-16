@@ -3,7 +3,6 @@ import java.sql.SQLException;
 
 public class CostManagerException extends Throwable {
     public CostManagerException(String s) {
-    //added
         System.out.println(s);
     }
 

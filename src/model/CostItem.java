@@ -85,9 +85,6 @@ public class CostItem {
             case "GBP":
                 this.currency = Currency.GBP;
                 break;
-//            default:
-//                this.currency = Currency.ILS;
-//                break;
         }
     }
 
@@ -97,7 +94,6 @@ public class CostItem {
 
     public void setCategory(String s) {
         this.category = new Category(s);
-        this.category = category;
     }
 
     @Override
