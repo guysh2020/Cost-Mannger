@@ -17,10 +17,6 @@ public interface IModel {
     public ArrayList<CostItem> getCosts(String query) throws CostManagerException;
     public ArrayList<Category> getCategories() throws CostManagerException;
     public boolean checkIfCategoryExist(Category c) throws CostManagerException;
-
-
-
-
 }
 
 

@@ -2,6 +2,13 @@ package model;
 
 public class Category {
     private String name;
+
+    /****
+     *
+     * Category constructor creates Category object from input [no id input is needed]
+     * @param name (string) category name also used as a unique value in the category table in DB
+     *
+     ****/
     public Category(String name) {
         //validation on name ( not repeaing not a number )
         // fetch data about category

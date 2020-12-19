@@ -11,7 +11,17 @@ public class CostItem {
     private double sum;
     private String description = "";
 
-    // for data back from DB
+    /****
+     *
+     * CostItem constructor creates CostItem object exists from DB
+     * @param id (int) holds the unique identifier for each CostItem in the system
+     * @param date (Date) holds the day the CostItem object occurred
+     * @param category (string) expense kinds
+     * @param currency (string) currency type of the expense
+     * @param sum (double) expense price
+     * @param description (string) expense description
+     *
+     ****/
     public CostItem(int id, Date date, String category, String currency, double sum, String description) throws CostManagerException {
         this.setId(id);
         this.setDate(date);
@@ -21,7 +31,16 @@ public class CostItem {
         this.setDescription(description);
     }
 
-    //for creating new by user
+    /****
+     *
+     * CostItem constructor creates CostItem object exists from input [no id input is needed]
+     * @param date (Date) holds the day the CostItem object occurred
+     * @param category (string) expense kinds
+     * @param currency (string) currency type of the expense
+     * @param sum (double) expense price
+     * @param description (string) expense description
+     *
+     ****/
     public CostItem(Date date, String category, String currency, double sum, String description) throws CostManagerException {
         this.setId(-1);
         this.setDate(date);
@@ -71,6 +90,11 @@ public class CostItem {
         return currency.which();
     }
 
+    /****
+     *
+     * converts string to Currency object
+     *
+     ****/
     public void setCurrency(String cur) {
         switch (cur) {
             case "ILS":

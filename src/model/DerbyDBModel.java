@@ -160,8 +160,7 @@ public class DerbyDBModel implements IModel {
 
         return true;
     }
-
-
+    
     @Override
     public ArrayList<Category> getCategories() throws CostManagerException {
 
