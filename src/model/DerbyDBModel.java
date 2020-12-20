@@ -10,6 +10,12 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Properties;
 
+
+/**
+ * This Class is an implementation of the IModel.
+ * It provides the DB API and initialize the DB
+ */
+
 public class DerbyDBModel implements IModel {
     private final String framework = "embedded";
     private final String protocol = "jdbc:derby:";
@@ -21,10 +27,25 @@ public class DerbyDBModel implements IModel {
     private ResultSet rs = null;
     private Statement st = null;
 
+
+    /**
+     * @param framework        (String) describes the type of the DB
+     * @param protocol         (String) describes the communication type
+     * @param dbName           (String) holds the DB name
+     * @param psInsertCost     (PreparedStatement) used for easy DB inserts to cost table
+     * @param psInsertCategory (PreparedStatement) used for easy DB inserts to category table
+     * @param conn             (Connection) holds the DB connection port
+     * @param props            (Properties) holds the DB properties
+     * @param rs               (ResultSet) holds the information that comes back from the DB
+     * @param st               (Statement) used to create insertion objects
+     */
     public DerbyDBModel() throws CostManagerException {
         setUpDerby();
     }
 
+    /**
+     * This method ensures the DB connection shuts down safely
+     */
     public void shutDown() throws CostManagerException {
         try {
             // the shutdown=true attribute shuts down Derby
@@ -48,14 +69,15 @@ public class DerbyDBModel implements IModel {
         }
     }
 
+    /**
+     * This method creates the DB tables, the queries templates and also get connection to the DB
+     */
     public void setUpDerby() throws CostManagerException {
-        System.out.println("Cost manager starting in " + framework + " mode");
 
         try {
             props = new Properties(); // connection properties
             conn = DriverManager.getConnection(protocol + dbName + ";create=true", props);
 
-            System.out.println("Connected to and created database " + dbName);
 
             conn.setAutoCommit(false);
             st = conn.createStatement();
@@ -66,7 +88,6 @@ public class DerbyDBModel implements IModel {
                 st.execute("create table category(name varchar(20))");
             } catch (SQLException sqle) {
                 if (sqle.getErrorCode() == 20000) {
-                    System.out.println("tables exist - ok");
                 } else
                     throw new CostManagerException("problem setting up derbyDB", sqle);
             }
@@ -74,13 +95,15 @@ public class DerbyDBModel implements IModel {
             psInsertCost = conn.prepareStatement("insert into costs(date_,category,currency,amount,description) values (?, ?, ?, ?,?)");
             psInsertCategory = conn.prepareStatement("insert into category values(?)");
             conn.commit();
-            System.out.println("Committed the transaction");
 
         } catch (SQLException sqle) {
             throw new CostManagerException("problem setting up derbyDB", sqle);
         }
     }
 
+    /**
+     * This method inserts new CostItem object to the DB, inserted id value is also increased
+     */
     @Override
     public boolean addCost(CostItem cost) throws CostManagerException {
         try {
@@ -101,6 +124,10 @@ public class DerbyDBModel implements IModel {
         return true;
     }
 
+
+    /**
+     * This method deletes a Cost item (row) from the DB using id
+     */
     @Override
     public boolean deleteCost(int id) throws CostManagerException {
         String query = "DELETE FROM costs WHERE id =" + id;
@@ -115,7 +142,9 @@ public class DerbyDBModel implements IModel {
         return true;
     }
 
-
+    /**
+     * This method returns an array of all CostItem objects between two dates
+     */
     @Override
     public ArrayList<CostItem> getCosts(Date start, Date end) throws CostManagerException {
 
@@ -125,6 +154,10 @@ public class DerbyDBModel implements IModel {
         return ans;
     }
 
+
+    /**
+     * This method returns an array of all CostItem objects
+     */
     @Override
     public ArrayList<CostItem> getCosts(String query) throws CostManagerException {
 
@@ -145,6 +178,9 @@ public class DerbyDBModel implements IModel {
         return ans;
     }
 
+    /**
+     * This method inserts new Category object to the DB
+     */
     @Override
     public boolean addCategory(Category c) throws CostManagerException {
         try {
@@ -160,7 +196,11 @@ public class DerbyDBModel implements IModel {
 
         return true;
     }
-    
+
+
+    /**
+     * This method returns an array of all Category objects created
+     */
     @Override
     public ArrayList<Category> getCategories() throws CostManagerException {
 
@@ -177,16 +217,20 @@ public class DerbyDBModel implements IModel {
         return ans;
     }
 
+
+    /**
+     * This method checks if a specific Category object exists in the DB
+     */
     @Override
     public boolean checkIfCategoryExist(Category c) throws CostManagerException {
         try {
             // categories saved at database in upper
-            String query = "SELECT * FROM category WHERE name ='"+c.toString().toUpperCase()+"'" ;
+            String query = "SELECT * FROM category WHERE name ='" + c.toString() + "'";
             rs = st.executeQuery(query);
 
-            if(!rs.next())
+            if (rs.next()) {
                 return true;
-            else
+            } else
                 return false;
         } catch (SQLException sqle) {
             throw new CostManagerException("problem fetching categories from derbyDB", sqle);

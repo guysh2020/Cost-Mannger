@@ -1,6 +1,7 @@
 package model;
 
 import java.sql.Date;
+import java.util.Objects;
 
 public class CostItem {
 
@@ -11,7 +12,13 @@ public class CostItem {
     private double sum;
     private String description = "";
 
-    /****
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, date, category, currency, sum, description);
+    }
+
+    /**
      *
      * CostItem constructor creates CostItem object exists from DB
      * @param id (int) holds the unique identifier for each CostItem in the system
@@ -21,7 +28,7 @@ public class CostItem {
      * @param sum (double) expense price
      * @param description (string) expense description
      *
-     ****/
+     */
     public CostItem(int id, Date date, String category, String currency, double sum, String description) throws CostManagerException {
         this.setId(id);
         this.setDate(date);
@@ -31,7 +38,7 @@ public class CostItem {
         this.setDescription(description);
     }
 
-    /****
+    /**
      *
      * CostItem constructor creates CostItem object exists from input [no id input is needed]
      * @param date (Date) holds the day the CostItem object occurred
@@ -40,7 +47,7 @@ public class CostItem {
      * @param sum (double) expense price
      * @param description (string) expense description
      *
-     ****/
+     */
     public CostItem(Date date, String category, String currency, double sum, String description) throws CostManagerException {
         this.setId(-1);
         this.setDate(date);
@@ -49,6 +56,7 @@ public class CostItem {
         this.setSum(sum);
         this.setDescription(description);
     }
+
 
     public int getId() {
         return id;
@@ -90,11 +98,11 @@ public class CostItem {
         return currency.which();
     }
 
-    /****
+    /**
      *
      * converts string to Currency object
      *
-     ****/
+     */
     public void setCurrency(String cur) {
         switch (cur) {
             case "ILS":
@@ -120,15 +128,41 @@ public class CostItem {
         this.category = new Category(s);
     }
 
+
+
+    /**
+     *
+     * This method returns the string representation of the class. values separated by comma sign
+     *
+     */
     @Override
     public String toString() {
         return "CostItem: {" +
                 "id=" + id +
                 ", date=" + date +
-                ", sum=" + sum +
+                ", category=" + category +
                 ", currency=" + currency +
-                ", description='" + description +
-                ", category=" + category + '}';
+                ", sum=" + sum +
+                ", description=" + description + '}';
+    }
+
+
+     /**
+     *
+     * This method returns if all values are equal between two CostItem objects
+     *
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CostItem costItem = (CostItem) o;
+        return id == costItem.id &&
+                Double.compare(costItem.sum, sum) == 0 &&
+                Objects.equals(date, costItem.date) &&
+                Objects.equals(category, costItem.category) &&
+                currency == costItem.currency &&
+                Objects.equals(description, costItem.description);
     }
 }
 
