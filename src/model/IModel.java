@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public interface IModel {
 
     public boolean addCost(CostItem cost) throws CostManagerException;
-    public boolean deleteCost(int id) throws CostManagerException, SQLException;
+    public boolean deleteCost(int id) throws CostManagerException;
     public boolean addCategory(Category c) throws CostManagerException;
     public ArrayList<CostItem> getCosts(Date start, Date end) throws CostManagerException;
     public ArrayList<CostItem> getCosts(String query) throws CostManagerException;

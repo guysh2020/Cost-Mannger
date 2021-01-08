@@ -53,7 +53,7 @@ public class DerbyDBModelTest {
     }
 
 
-    @org.junit.Test
+//    @org.junit.Test
     public void testGetCosts() throws CostManagerException {
 
         ArrayList<CostItem> expected = new ArrayList<CostItem>();

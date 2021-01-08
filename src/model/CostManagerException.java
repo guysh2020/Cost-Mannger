@@ -4,20 +4,21 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 
-
-
-
 public class CostManagerException extends Throwable {
+    /**
+     *
+     * CostManagerException constructor holds the cause of the exception.
+     *
+     * @param message (string) the detailed cause of the exception.
+     *
+     * @param sqle (SQLException) the detailed cause of the exception.
+     *
+     */
+
     public String message;
     private SQLException sqle;
 
-    /**
-     *
-     * CostManagerException constructor holds the cause of the exception
-     * @param message (string) the detailed cause of the exception
-     * @param sqle (SQLException) the detailed cause of the exception
-     *
-     */
+
     public CostManagerException(String s) {
         this.message = s;
     }
