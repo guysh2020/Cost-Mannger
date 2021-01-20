@@ -3,7 +3,6 @@ package model;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-
 public class CostManagerException extends Throwable {
     /**
      *

@@ -12,9 +12,6 @@ public class Category {
      *
      */
     public Category(String name) {
-
-        // a function in the controller that calls derbydb and invokes the checkIfCategoryExist
-
         this.name = name;
     }
 

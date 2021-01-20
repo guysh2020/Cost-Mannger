@@ -12,3 +12,4 @@ public enum Currency {
         return this.toString();
     }
 }
+
