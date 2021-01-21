@@ -15,6 +15,7 @@ public class Main {
         IView v = new View();
         IViewModel vm = new ViewModel();
         IModel model = new DerbyDBModel();
+//        model.addCategory(new Category("food"));
 
         v.setViewModel(vm);
         vm.setView(v);

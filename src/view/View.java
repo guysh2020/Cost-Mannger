@@ -239,6 +239,7 @@ public class View implements IView {
          */
 
         public void addExpense() {
+            message.setText("");
             class JTextFieldLimit extends PlainDocument {
                 private int limit;
 

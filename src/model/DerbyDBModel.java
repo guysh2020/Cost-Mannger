@@ -55,15 +55,10 @@ public class DerbyDBModel implements IModel {
         Connection conn = null;
         Statement st = null;
         try {
-            System.out.println("1");
             Properties props = new Properties(); // connection properties
-            System.out.println("2");
             conn = DriverManager.getConnection(protocol + dbName + ";create=true", props);
-            System.out.println("3");
             conn.setAutoCommit(false);
-            System.out.println("4");
             st = conn.createStatement();
-            System.out.println("5");
 
             // block of crating our tables
             try {
@@ -80,7 +75,11 @@ public class DerbyDBModel implements IModel {
 
         } catch (SQLException sqle) {
             System.out.println( sqle.getErrorCode());
-            sqle.printStackTrace();
+
+            System.out.println( sqle.getCause());
+            System.out.println( sqle.getNextException());
+//            sqle.printStackTrace();
+
             throw new CostManagerException("problem setting up derbyDB", sqle);
         } finally {
             try {
@@ -343,6 +342,7 @@ public class DerbyDBModel implements IModel {
         ResultSet rs = null;
         Statement st = null;
         Connection conn = null;
+
         boolean flag = true;
         try {
 
@@ -360,7 +360,7 @@ public class DerbyDBModel implements IModel {
         try {
             // categories saved at database in upper
 
-            String query = "SELECT * FROM categories WHERE name = '" + c.toString() + "'";
+            String query = "SELECT * FROM category WHERE name = '" + c.toString() + "'";
 
             rs = st.executeQuery(query);
 
@@ -369,6 +369,7 @@ public class DerbyDBModel implements IModel {
             } else
                 flag = false;
         } catch (SQLException sqle) {
+            sqle.printStackTrace();
             throw new CostManagerException("problem fetching categories from derbyDB", sqle);
         } finally {
             try {
