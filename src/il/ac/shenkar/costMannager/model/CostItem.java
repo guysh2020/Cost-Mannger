@@ -1,5 +1,9 @@
-package model;
+/*
+  Guy Sharir: 310010244
+  Ido Betesh: 307833822
+ */
 
+package il.ac.shenkar.costMannager.model;
 import java.sql.Date;
 import java.util.Objects;
 
@@ -11,7 +15,6 @@ public class CostItem {
     private Currency currency;
     private double sum;
     private String description = "";
-
 
     @Override
     public int hashCode() {
@@ -49,14 +52,8 @@ public class CostItem {
      *
      */
     public CostItem(Date date, String category, String currency, double sum, String description) throws CostManagerException {
-        this.setId(-1);
-        this.setDate(date);
-        this.setCategory(category);
-        this.setCurrency(currency);
-        this.setSum(sum);
-        this.setDescription(description);
+        this(-1 , date, category, currency, sum, description);
     }
-
 
     public int getId() {
         return id;
@@ -124,11 +121,10 @@ public class CostItem {
         return category.toString();
     }
 
+
     public void setCategory(String s) {
         this.category = new Category(s);
     }
-
-
 
     /**
      *
@@ -143,13 +139,12 @@ public class CostItem {
                 ", category=" + category +
                 ", currency=" + currency +
                 ", sum=" + sum +
-                ", description=" + description + '}';
+                ", description=" + description + "}\n";
     }
-
 
      /**
      *
-     * This method returns if all values are equal between two CostItem objects
+     * This method returns true if all values are equal between two CostItem objects
      *
      */
     @Override

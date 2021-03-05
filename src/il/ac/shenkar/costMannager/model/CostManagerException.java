@@ -1,7 +1,12 @@
-package model;
+/*
+  Guy Sharir: 310010244
+  Ido Betesh: 307833822
+ */
 
+package il.ac.shenkar.costMannager.model;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
 
 public class CostManagerException extends Throwable {
     /**
@@ -21,22 +26,16 @@ public class CostManagerException extends Throwable {
     public CostManagerException(String s) {
         this.message = s;
     }
-
-
+    
     public CostManagerException(String s, SQLException e) {
         this.message = s;
         this.sqle = e;
     }
-
-    public void printMessage(){
-        System.out.println(this.message);
-    }
-
+    
     public String getMessage(){
         return this.message ;
     }
-
-
+    
     /**
      *
      * This method prints the full exception description from derby DB
@@ -63,7 +62,7 @@ public class CostManagerException extends Throwable {
      *
      */
     public ArrayList<String> getSQLException(SQLException e) {
-        ArrayList<String> exc= new ArrayList<String>();
+        ArrayList<String> exc= new ArrayList<>();
 
         while (e != null) {
             exc.add("SQL State:" + e.getSQLState() + "\nError Code:" + e.getErrorCode() + "\nMessage:" + e.getMessage());

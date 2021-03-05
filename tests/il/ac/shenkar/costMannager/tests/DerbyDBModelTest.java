@@ -1,9 +1,9 @@
-package model.tests;
+package il.ac.shenkar.costMannager.tests;
 
-import model.Category;
-import model.CostItem;
-import model.CostManagerException;
-import model.DerbyDBModel;
+import il.ac.shenkar.costMannager.model.CostItem;
+import il.ac.shenkar.costMannager.model.CostManagerException;
+import il.ac.shenkar.costMannager.model.Category;
+import il.ac.shenkar.costMannager.model.DerbyDBModel;
 
 import java.sql.Date;
 import java.util.ArrayList;
