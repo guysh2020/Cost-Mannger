@@ -1,4 +1,9 @@
-package model;
+/*
+  Guy Sharir: 310010244
+  Ido Betesh: 307833822
+ */
+
+package il.ac.shenkar.costMannager.model;
 
 import java.sql.SQLException;
 import java.sql.Connection;
@@ -15,7 +20,6 @@ import java.util.Properties;
  * This Class is an implementation of the IModel.
  * It provides the DB API and initialize the DB
  */
-
 public class DerbyDBModel implements IModel {
     /**
      * @param framework        (String) describes the type of the DB
@@ -23,7 +27,7 @@ public class DerbyDBModel implements IModel {
      * @param dbName           (String) holds the DB name
      */
 
-    private final String framework = "embedded";
+//    private final String framework = "embedded";
     private final String protocol = "jdbc:derby:";
     private final String dbName = "costManagerDB";
 
@@ -36,14 +40,14 @@ public class DerbyDBModel implements IModel {
      */
     public void shutDown() throws CostManagerException {
         try {
-            // the shutdown=true attribute shuts down Derby
+            // shutdown=true attribute shuts down Derby
             DriverManager.getConnection("jdbc:derby:;shutdown=true");
 
         } catch (SQLException se) {
             if (((se.getErrorCode() == 50000) && ("XJ015".equals(se.getSQLState())))) {
                 System.out.println("Derby shut down normally");
             } else {
-                System.out.println("Derby did not shut down normally");
+                throw new CostManagerException("derby DB didnt shut down properly");
             }
         }
     }
@@ -60,26 +64,22 @@ public class DerbyDBModel implements IModel {
             conn.setAutoCommit(false);
             st = conn.createStatement();
 
-            // block of crating our tables
             try {
-                st.execute("create table costs(id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1), date_ DATE, category varchar(40), currency varchar(5), amount double, description varchar(100))");
+                st.execute("create table costs(id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY" +
+                        " (START WITH 1, INCREMENT BY 1)," +
+                        " date_ DATE, category varchar(40), currency varchar(5)," +
+                        " amount double, description varchar(100))");
+
                 st.execute("create table category(name varchar(20))");
                 System.out.println("3");
             } catch (SQLException sqle) {
-                if (sqle.getErrorCode() == 20000) {
-                } else
+                if (sqle.getErrorCode() != 20000)
                     throw new CostManagerException("problem setting up derbyDB tables", sqle);
             }
 
             conn.commit();
 
         } catch (SQLException sqle) {
-            System.out.println( sqle.getErrorCode());
-
-            System.out.println( sqle.getCause());
-            System.out.println( sqle.getNextException());
-//            sqle.printStackTrace();
-
             throw new CostManagerException("problem setting up derbyDB", sqle);
         } finally {
             try {
@@ -106,7 +106,8 @@ public class DerbyDBModel implements IModel {
             conn = DriverManager.getConnection(protocol + dbName + ";create=true", props);
             conn.setAutoCommit(false);
 
-            psInsertCost = conn.prepareStatement("insert into costs(date_,category,currency,amount,description) values (?, ?, ?, ?, ?)");
+            psInsertCost = conn.prepareStatement("insert into costs(date_,category,currency,amount,description)" +
+                    " values (?, ?, ?, ?, ?)");
 
         } catch (SQLException sqle) {
             throw new CostManagerException("problem setting up derbyDB", sqle);
@@ -136,7 +137,6 @@ public class DerbyDBModel implements IModel {
 
         return true;
     }
-
 
     /**
      * This method deletes a Cost item (row) from the DB using id
@@ -189,12 +189,12 @@ public class DerbyDBModel implements IModel {
     @Override
     public ArrayList<CostItem> getCosts(Date start, Date end) throws CostManagerException {
 
-        String query = "SELECT * FROM costs WHERE date_ BETWEEN DATE('" + start.toLocalDate() + "') and DATE('" + end.toLocalDate() + "')";
+        String query = "SELECT * FROM costs WHERE date_ BETWEEN DATE('" +
+        start.toLocalDate() + "') and DATE('" + end.toLocalDate() + "')";
         ArrayList<CostItem> ans = this.getCosts(query);
 
         return ans;
     }
-
 
     /**
      * This method returns an array of all CostItem objects
@@ -204,9 +204,7 @@ public class DerbyDBModel implements IModel {
 
         if (query == "") {
             query = "SELECT * FROM costs";
-        }
-
-        else if (query.startsWith("category")) {
+        } else if (query.startsWith("category")) {
             String category = query.split("-")[1];
 
             query = "SELECT * FROM costs WHERE category = '" + category + "'";
@@ -221,8 +219,6 @@ public class DerbyDBModel implements IModel {
             conn = DriverManager.getConnection(protocol + dbName + ";create=true", props);
             conn.setAutoCommit(false);
             st = conn.createStatement();
-
-
         } catch (SQLException sqle) {
             throw new CostManagerException("problem setting connection in delete cost", sqle);
         }
@@ -231,7 +227,8 @@ public class DerbyDBModel implements IModel {
         try {
             rs = st.executeQuery(query);
             while (rs.next()) {
-                ans.add(new CostItem(rs.getInt(1), rs.getDate(2), rs.getString(3), rs.getString(4), rs.getDouble(5), rs.getString(6)));
+                ans.add(new CostItem(rs.getInt(1), rs.getDate(2), rs.getString(3),
+                        rs.getString(4), rs.getDouble(5), rs.getString(6)));
             }
         } catch (SQLException sqle) {
             throw new CostManagerException("problem getting all costs from derbyDB", sqle);
@@ -287,7 +284,6 @@ public class DerbyDBModel implements IModel {
 
         return true;
     }
-
 
     /**
      * This method returns an array of all Category objects created

@@ -1,13 +1,15 @@
-package view;
+/*
+ * Guy Sharir: 310010244
+ * Ido Betesh: 307833822
+ */
+
+package il.ac.shenkar.costMannager.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -16,19 +18,25 @@ import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.util.List;
 
-import model.Category;
+import il.ac.shenkar.costMannager.model.CostManagerException;
+import il.ac.shenkar.costMannager.model.Category;
 
 import javax.swing.JPanel;
 
-import model.CostItem;
-import model.CostManagerException;
-import vm.IViewModel;
+import il.ac.shenkar.costMannager.model.CostItem;
+import il.ac.shenkar.costMannager.vm.IViewModel;
+import org.jfree.chart.*;
+import org.jfree.data.general.DefaultPieDataset;
 
 /**
  * This class defines the front end of our application.
  * The variables are shared in all screens
  */
 public class View implements IView {
+    /**
+     * @param vm (IViewModel) viewModel interface
+     * @param ui (ApplicationUI) the applicarion ui class
+     */
     private IViewModel vm;
     private View.ApplicationUI ui;
 
@@ -42,10 +50,9 @@ public class View implements IView {
         });
     }
 
-
     @Override
     public void displayPieChart(Map map) {
-
+        ui.displayPieChart(map);
     }
 
     @Override
@@ -55,10 +62,11 @@ public class View implements IView {
 
     @Override
     public void showItems(List<CostItem> data) {
-        CostItem[] res = new CostItem[data.size()];
-        for (int i = 0; i < data.size(); i++)
-            res[i] = data.get(i);
 
+        CostItem[] res = new CostItem[data.size()];
+        for (int i = 0; i < data.size(); i++) {
+            res[i] = data.get(i);
+        }
         this.ui.showItems(res);
     }
 
@@ -67,32 +75,37 @@ public class View implements IView {
         this.vm = vm;
     }
 
+    @Override
+    public void setCategories(List<Category> categories) {
+        ui.setCategories(categories);
+    }
 
+
+    /**
+     * This class displays the front end of our application
+     * using swing library
+     */
     public class ApplicationUI {
 
         private JFrame mainFrame, frame;
+        private JButton submitBtn;
+        private final JButton backToHomePage;
+        private JPanel messagePnl;
+        private JPanel backHomePnl;
+        private JPanel dataPnl;
+        private JComboBox currienciesCmbo, categories;
+        private JLabel header;
+        private final JLabel labelMsg;
+        private JTextArea descriptionField;
+        private JTextField dateField;
+        private JTextField amountField;
+        private JTextField newCategoryField;
+        private JTextField fromField;
+        private JTextField toField;
+        private final JTextField message;
+        private JTextField toDelete;
+        private JScrollPane sp;
 
-        private JButton addExpanseBtn, addCategoryBtn, deleteExpenseBtn, getPieChartBtn, getCategorySummaryBtn,
-                getListSummaryBtn, submitBtn, backToHomePage, deleteBtn;
-
-        private JPanel homePagePnl, headerPnl, addExpensePnl, messagePnl, backHomePnl, dataPnl, actionPnl,
-                getDatesPnl, getCategoryPnl, addCategoryPnl;
-
-        private JComboBox categoriesCmbo, currienciesCmbo;
-
-        private JLabel header, dateLbl, categoryLbl, currencyLbl, amountLbl, descriptionLbl,
-                getIdLbl, fromDateLbl, toDateLbl, labelMsg, chooseCategoryLbl, enterCategoryLbl;
-
-        private JTextArea descriptionField, costs;
-
-        private JComboBox categories;
-
-        private JTextField dateField, amountField, newCategoryField, fromField, toField, message, toDelete, currencyField;
-
-        private JScrollPane scroll;
-        private JTable costsTable;
-        JScrollPane sp;
-//     private JFreeChart pieChart;
 
         /**
          * Constructor, initiates the variables
@@ -100,7 +113,6 @@ public class View implements IView {
         public ApplicationUI() {
             this.mainFrame = new JFrame("Cost Manager");
             this.mainFrame.setSize(500, 40);
-//            sp = new JScrollPane();
 
             mainFrame.addWindowListener(new WindowAdapter() {
                 /**
@@ -115,16 +127,15 @@ public class View implements IView {
                 }
             });
 
-
             header = new JLabel();
             labelMsg = new JLabel("Message:");
-            labelMsg.setFont(new Font("Ariel", Font.ITALIC, 22));
+            labelMsg.setFont(new Font("Calibri", Font.ITALIC, 22));
             message = new JTextField(25);
             message.setEditable(false);
 
             backToHomePage = new JButton("< Back Home");
             backToHomePage.setSize(50, 30);
-            backToHomePage.setFont(new Font("Ariel", Font.BOLD, 14));
+            backToHomePage.setFont(new Font("Calibri", Font.BOLD, 14));
 
             backToHomePage.addActionListener(new ActionListener() {
                 @Override
@@ -138,24 +149,28 @@ public class View implements IView {
         /**
          * This method creates the main menu of the application
          */
-
         public void createHomePage() {
 
-            addExpanseBtn = new JButton("Add Expense");
-            addCategoryBtn = new JButton("Add Category");
-            deleteExpenseBtn = new JButton("Delete Expense");
-            getPieChartBtn = new JButton("Pie Chart summary");
-            getCategorySummaryBtn = new JButton("Category summary");
-            getListSummaryBtn = new JButton("List summary");
-
+            JButton addExpanseBtn = new JButton("Add Expense");
+            JButton addCategoryBtn = new JButton("Add Category");
+            JButton deleteExpenseBtn = new JButton("Delete Expense");
+            JButton getPieChartBtn = new JButton("Pie Chart summary");
+            JButton getCategorySummaryBtn = new JButton("Category summary");
+            JButton getListSummaryBtn = new JButton("List summary");
+            addExpanseBtn.setFont(new Font("Calibri", Font.BOLD, 25));
+            addCategoryBtn.setFont(new Font("Calibri", Font.BOLD, 25));
+            deleteExpenseBtn.setFont(new Font("Calibri", Font.BOLD, 25));
+            getPieChartBtn.setFont(new Font("Calibri", Font.BOLD, 25));
+            getCategorySummaryBtn.setFont(new Font("Calibri", Font.BOLD, 25));
+            getListSummaryBtn.setFont(new Font("Calibri", Font.BOLD, 25));
 
             addExpanseBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     ApplicationUI.this.mainFrame.setVisible(false);
+                    vm.getCategories();
                     ApplicationUI.this.addExpense();
                 }
-
             });
 
             addCategoryBtn.addActionListener(new ActionListener() {
@@ -173,7 +188,6 @@ public class View implements IView {
                     ApplicationUI.this.deleteExpense();
                     vm.getCostItems(new ArrayList<String>());
                 }
-
             });
 
             getPieChartBtn.addActionListener(new ActionListener() {
@@ -182,16 +196,15 @@ public class View implements IView {
                     ApplicationUI.this.mainFrame.setVisible(false);
                     ApplicationUI.this.getDatesForSummary(true);
                 }
-
             });
 
             getCategorySummaryBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     ApplicationUI.this.mainFrame.setVisible(false);
+                    vm.getCategories();
                     ApplicationUI.this.getCategoryForSummary();
                 }
-
             });
 
             getListSummaryBtn.addActionListener(new ActionListener() {
@@ -200,7 +213,6 @@ public class View implements IView {
                     ApplicationUI.this.mainFrame.setVisible(false);
                     ApplicationUI.this.getDatesForSummary(false);
                 }
-
             });
 
             addExpanseBtn.setPreferredSize(new Dimension(200, 100));
@@ -211,16 +223,16 @@ public class View implements IView {
             getListSummaryBtn.setPreferredSize(new Dimension(200, 100));
 
             header = new JLabel("Home Page");
-            header.setFont(new Font("Ariel", Font.BOLD, 34));
+            header.setFont(new Font("Calibri", Font.BOLD, 34));
+            JPanel homePagePnl = new JPanel();
+            JPanel headerPnl = new JPanel();
 
-            homePagePnl = new JPanel();
-
-            headerPnl = new JPanel();
             headerPnl.setLayout(new FlowLayout());
             headerPnl.add(header);
             mainFrame.add(headerPnl, BorderLayout.NORTH);
 
-            homePagePnl.setLayout(new GridLayout(2, 3));
+            homePagePnl.setLayout(new GridLayout(3, 2));
+
             homePagePnl.add(addExpanseBtn);
             homePagePnl.add(addCategoryBtn);
             homePagePnl.add(deleteExpenseBtn);
@@ -263,52 +275,49 @@ public class View implements IView {
             }
 
             dateField = new JTextField();
-            currencyField = new JTextField();
+            JTextField currencyField = new JTextField();
             amountField = new JTextField();
             newCategoryField = new JTextField();
 
             frame = new JFrame("Add Expense");
-            frame.setSize(400, 600);
+            frame.setSize(600, 600);
             frame.setResizable(false);
 
             dateField = new JTextField(20);
             amountField = new JTextField(20);
-
 
             descriptionField = new JTextArea(1, 10);
             descriptionField.setLineWrap(true);
 
             descriptionField.setDocument(new JTextFieldLimit(80));
 
-            dateField.setFont(new Font("Ariel", Font.PLAIN, 16));
-            amountField.setFont(new Font("Ariel", Font.PLAIN, 16));
-            descriptionField.setFont(new Font("Ariel", Font.PLAIN, 16));
+            dateField.setFont(new Font("Calibri", Font.PLAIN, 16));
+            amountField.setFont(new Font("Calibri", Font.PLAIN, 16));
+            descriptionField.setFont(new Font("Calibri", Font.PLAIN, 16));
 
             dateField.setMaximumSize(new Dimension(200, 30));
             amountField.setMaximumSize(new Dimension(200, 30));
             descriptionField.setMaximumSize(new Dimension(200, 80));
 
-            String[] CategoriesStrings = vm.getCategories();
             String[] currenciesStrings = {"USD", "ILS", "GBP", "EURO"};
 
-            categoriesCmbo = new JComboBox(CategoriesStrings);
+            categories = new JComboBox();
+            categories.setFont(new Font("Calibri", Font.PLAIN, 16));
+            categories.setMaximumSize(new Dimension(200, 30));
+
             currienciesCmbo = new JComboBox(currenciesStrings);
-
-            categoriesCmbo.setFont(new Font("Ariel", Font.PLAIN, 16));
-            currienciesCmbo.setFont(new Font("Ariel", Font.PLAIN, 16));
-
-            categoriesCmbo.setMaximumSize(new Dimension(200, 30));
+            currienciesCmbo.setFont(new Font("Calibri", Font.PLAIN, 16));
             currienciesCmbo.setMaximumSize(new Dimension(200, 30));
 
-            addExpensePnl = new JPanel();
+            JPanel addExpensePnl = new JPanel();
             BoxLayout boxlayout = new BoxLayout(addExpensePnl, BoxLayout.Y_AXIS);
             addExpensePnl.setLayout(boxlayout);
 
-            dateLbl = new JLabel("date YYYY-MM-DD");
-            categoryLbl = new JLabel("category");
-            currencyLbl = new JLabel("currency");
-            amountLbl = new JLabel("amount");
-            descriptionLbl = new JLabel("description");
+            JLabel dateLbl = new JLabel("date YYYY-MM-DD");
+            JLabel categoryLbl = new JLabel("category");
+            JLabel currencyLbl = new JLabel("currency");
+            JLabel amountLbl = new JLabel("amount");
+            JLabel descriptionLbl = new JLabel("description");
 
             dateLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
             categoryLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -316,11 +325,11 @@ public class View implements IView {
             amountLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
             descriptionLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            dateLbl.setFont(new Font("Ariel", Font.BOLD, 25));
-            categoryLbl.setFont(new Font("Ariel", Font.BOLD, 25));
-            currencyLbl.setFont(new Font("Ariel", Font.BOLD, 25));
-            amountLbl.setFont(new Font("Ariel", Font.BOLD, 25));
-            descriptionLbl.setFont(new Font("Ariel", Font.BOLD, 25));
+            dateLbl.setFont(new Font("Calibri", Font.BOLD, 25));
+            categoryLbl.setFont(new Font("Calibri", Font.BOLD, 25));
+            currencyLbl.setFont(new Font("Calibri", Font.BOLD, 25));
+            amountLbl.setFont(new Font("Calibri", Font.BOLD, 25));
+            descriptionLbl.setFont(new Font("Calibri", Font.BOLD, 25));
 
             submitBtn = new JButton("Submit");
 
@@ -345,7 +354,7 @@ public class View implements IView {
                             throw new CostManagerException("Invalid date");
                         }
 
-                        String[] splitDate = dateField.getText().split("-"); // [yyyy, mm, dd]
+                        String[] splitDate = dateField.getText().split("[-/.]"); // [yyyy, mm, dd]
 
                         int day = 0;
                         int month = 0;
@@ -362,10 +371,10 @@ public class View implements IView {
 
                         date = Date.valueOf(dateField.getText());
 
-
                         CostItem item = null;
                         try {
-                            item = new CostItem(date, (String) categoriesCmbo.getSelectedItem(), (String) currienciesCmbo.getSelectedItem(), sum, description);
+                            item = new CostItem(date, (String) categories.getSelectedItem(),
+                                    (String) currienciesCmbo.getSelectedItem(), sum, description);
                         } catch (CostManagerException costManagerException) {
                             ui.showMessage(costManagerException.getMessage());
                         }
@@ -376,20 +385,17 @@ public class View implements IView {
                     } catch (CostManagerException ex) {
                         ui.showMessage("problem with entered data: " + ex.getMessage());
                     }
-
-
                 }
-
             });
 
             submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-            submitBtn.setFont(new Font("Ariel", Font.BOLD, 25));
+            submitBtn.setFont(new Font("Calibri", Font.BOLD, 25));
 
             addExpensePnl.add(dateLbl);
             addExpensePnl.add(dateField);
 
             addExpensePnl.add(categoryLbl);
-            addExpensePnl.add(categoriesCmbo);
+            addExpensePnl.add(categories);
 
             addExpensePnl.add(currencyLbl);
             addExpensePnl.add(currienciesCmbo);
@@ -401,7 +407,6 @@ public class View implements IView {
             addExpensePnl.add(descriptionField);
 
             addExpensePnl.add(submitBtn);
-
 
             messagePnl = new JPanel();
             messagePnl.setLayout(new FlowLayout());
@@ -422,15 +427,13 @@ public class View implements IView {
                     System.exit(0);
                 }
             });
-
+            frame.pack();
             frame.setVisible(true);
         }
 
         /**
          * This method is used to delete an expense from the DB
          */
-
-        //will call from vm the func showcost
         public void deleteExpense() {
             message.setText("");
             frame = new JFrame("Delete Expense");
@@ -438,15 +441,14 @@ public class View implements IView {
             frame.setSize(700, 700);
             frame.setResizable(false);
 
-
             dataPnl = new JPanel();
             BoxLayout boxlayout = new BoxLayout(dataPnl, BoxLayout.Y_AXIS);
             dataPnl.setLayout(boxlayout);
 
-            getIdLbl = new JLabel("Enter id:");
-            getIdLbl.setFont(new Font("Ariel", Font.BOLD, 16));
-            deleteBtn = new JButton("Delete");
-            deleteBtn.setFont(new Font("Ariel", Font.BOLD, 16));
+            JLabel getIdLbl = new JLabel("Enter id:");
+            getIdLbl.setFont(new Font("Calibri", Font.BOLD, 16));
+            JButton deleteBtn = new JButton("Delete");
+            deleteBtn.setFont(new Font("Calibri", Font.BOLD, 16));
 
             deleteBtn.addActionListener(new ActionListener() {
                 @Override
@@ -471,18 +473,15 @@ public class View implements IView {
             });
 
             toDelete = new JTextField(20);
-            toDelete.setFont(new Font("Ariel", Font.PLAIN, 16));
+            toDelete.setFont(new Font("Calibri", Font.PLAIN, 16));
 
-            actionPnl = new JPanel();
+            JPanel actionPnl = new JPanel();
             actionPnl.setLayout(new FlowLayout());
             actionPnl.add(getIdLbl);
             actionPnl.add(toDelete);
             actionPnl.add(deleteBtn);
 
-//            sp = new JScrollPane();
-
             dataPnl.add(actionPnl);
-//            deletePnl.add(sp);
 
             backHomePnl = new JPanel();
             backHomePnl.setLayout(new BorderLayout());
@@ -503,43 +502,40 @@ public class View implements IView {
                     System.exit(0);
                 }
             });
-//            frame.pack();
             frame.setVisible(true);
-
-
         }
 
         /**
          * This method asks for dates from the user in which he wants to get the summary
+         * false where display by dates, true when called from displayPieChart
          */
-
-        public void getDatesForSummary(boolean isChart) { // false where display by dates, true when called from displayPieChart
+        public void getDatesForSummary(boolean isChart) {
             message.setText("");
             frame = new JFrame("Enter Dates");
             frame.setSize(400, 400);
             frame.setResizable(false);
 
-            getDatesPnl = new JPanel();
+            JPanel getDatesPnl = new JPanel();
             BoxLayout boxlayout = new BoxLayout(getDatesPnl, BoxLayout.Y_AXIS);
             getDatesPnl.setLayout(boxlayout);
 
-            fromDateLbl = new JLabel("From date");
-            toDateLbl = new JLabel("To Date");
+            JLabel fromDateLbl = new JLabel("From date");
+            JLabel toDateLbl = new JLabel("To Date");
 
             fromField = new JTextField(20);
             toField = new JTextField(20);
 
-            fromField.setFont(new Font("Ariel", Font.PLAIN, 16));
-            toField.setFont(new Font("Ariel", Font.PLAIN, 16));
+            fromField.setFont(new Font("Calibri", Font.PLAIN, 16));
+            toField.setFont(new Font("Calibri", Font.PLAIN, 16));
 
             fromField.setMaximumSize(new Dimension(250, 30));
             toField.setMaximumSize(new Dimension(250, 30));
 
-            fromDateLbl.setFont(new Font("Ariel", Font.BOLD, 20));
-            toDateLbl.setFont(new Font("Ariel", Font.BOLD, 20));
+            fromDateLbl.setFont(new Font("Calibri", Font.BOLD, 20));
+            toDateLbl.setFont(new Font("Calibri", Font.BOLD, 20));
 
             submitBtn = new JButton("Submit");
-            submitBtn.setFont(new Font("Ariel", Font.PLAIN, 16));
+            submitBtn.setFont(new Font("Calibri", Font.PLAIN, 16));
 
             fromDateLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
             toDateLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -558,9 +554,7 @@ public class View implements IView {
                 public void actionPerformed(ActionEvent e) {
                     String fromStr = null;
                     String toStr = null;
-
                     boolean valid = true;
-
 
                     try {
                         if (fromField.getText().length() == 0 || toField.getText().length() == 0) {
@@ -574,14 +568,13 @@ public class View implements IView {
                             throw new CostManagerException("one or more date is invalid");
                         }
 
-                        String[] splitDateTo = toStr.split("-"); // [yyyy, mm, dd]
-                        String[] splitDateFrom = fromStr.split("-"); // [yyyy, mm, dd]
-
-
+                        String[] splitDateTo = toStr.split("[-/.]"); // [yyyy, mm, dd]
+                        String[] splitDateFrom = fromStr.split("[-/.]"); // [yyyy, mm, dd]
                         int monthTo = 0;
                         int dayTo = 0;
                         int monthFrom = 0;
                         int dayFrom = 0;
+
                         try {
                             monthTo = Integer.parseInt(splitDateTo[1]);
                             dayTo = Integer.parseInt(splitDateTo[2]);
@@ -591,7 +584,6 @@ public class View implements IView {
                         } catch (NumberFormatException ex) {
                             throw new CostManagerException("date must be Numeric");
                         }
-
 
                         if (dayTo > 31 || dayTo < 1 || monthTo > 12 || monthTo < 1) {
                             throw new CostManagerException("Invalid date");
@@ -610,20 +602,21 @@ public class View implements IView {
                         View.this.showMessage(ex.getMessage());
                     }
 
-                    // forward dates to relevant function
-                    if (isChart && valid) {
-                        //displayPieChart(vm.generateMap())
-                    } else if(valid){
+                    if (valid) {
                         frame.dispose();
-                        ApplicationUI.this.generateDatesSummary();
                         ArrayList<String> query = new ArrayList<>();
                         query.add(fromStr);
                         query.add(toStr);
-                        vm.getCostItems(query);
+
+                        if (isChart) {
+                            vm.getPieChartData(query);
+                        } else {
+                            ApplicationUI.this.generateDatesSummary();
+                            vm.getCostItems(query);
+                        }
                     }
                 }
             });
-
 
             backHomePnl = new JPanel();
             backHomePnl.setLayout(new BorderLayout());
@@ -648,7 +641,7 @@ public class View implements IView {
         }
 
         /**
-         * This function creates summary according to the user requent (by dates / by category)
+         * This function creates summary according to the user request (by dates / by category)
          */
         public void generateCategorySummary() {
             message.setText("");
@@ -665,7 +658,6 @@ public class View implements IView {
                 }
             });
 
-
             dataPnl = new JPanel();
             BoxLayout boxlayout = new BoxLayout(dataPnl, BoxLayout.Y_AXIS);
             dataPnl.setLayout(boxlayout);
@@ -674,13 +666,14 @@ public class View implements IView {
             backHomePnl.setLayout(new BorderLayout());
             backHomePnl.add(backToHomePage, BorderLayout.WEST);
 
-
             frame.add(backHomePnl, BorderLayout.NORTH);
             frame.add(dataPnl, BorderLayout.CENTER);
             frame.setResizable(false);
-
         }
 
+        /**
+         * This function creates summary according to the user request (by dates / by category)
+         */
         public void generateDatesSummary() {
             message.setText("");
             frame = new JFrame();
@@ -704,38 +697,33 @@ public class View implements IView {
             backHomePnl.setLayout(new BorderLayout());
             backHomePnl.add(backToHomePage, BorderLayout.WEST);
 
-
             frame.add(backHomePnl, BorderLayout.NORTH);
             frame.add(dataPnl, BorderLayout.CENTER);
             frame.add(messagePnl, BorderLayout.SOUTH);
             frame.setResizable(false);
-
         }
 
         /**
          * This function creates window that ask the user to enter the category he wants to get summary by.
          */
-
         public void getCategoryForSummary() {
+
             message.setText("");
             frame = new JFrame("Get Category");
             frame.setSize(400, 400);
             frame.setResizable(false);
 
-            chooseCategoryLbl = new JLabel("Choose category");
+            JLabel chooseCategoryLbl = new JLabel("Choose category");
 
-            String[] CategoriesStrings = vm.getCategories();
-            categories = new JComboBox(CategoriesStrings); // vm.getCategories
-            categories.setFont(new Font("Ariel", Font.PLAIN, 16));
+            categories = new JComboBox();
+            categories.setFont(new Font("Calibri", Font.PLAIN, 16));
 
             categories.setMaximumSize(new Dimension(250, 30));
 
-
-            chooseCategoryLbl.setFont(new Font("Ariel", Font.BOLD, 20));
-
+            chooseCategoryLbl.setFont(new Font("Calibri", Font.BOLD, 20));
 
             submitBtn = new JButton("Submit");
-            submitBtn.setFont(new Font("Ariel", Font.PLAIN, 16));
+            submitBtn.setFont(new Font("Calibri", Font.PLAIN, 16));
             submitBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -745,20 +733,17 @@ public class View implements IView {
                     ArrayList<String> tmp = new ArrayList<String>();
                     tmp.add(category);
                     vm.getCostItems(tmp);
-
                 }
             });
-
 
             chooseCategoryLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
             categories.setAlignmentX(Component.CENTER_ALIGNMENT);
             submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            getCategoryPnl = new JPanel();
+            JPanel getCategoryPnl = new JPanel();
             getCategoryPnl.add(chooseCategoryLbl);
             getCategoryPnl.add(categories);
             getCategoryPnl.add(submitBtn);
-
 
             backHomePnl = new JPanel();
             backHomePnl.setLayout(new BorderLayout());
@@ -785,14 +770,14 @@ public class View implements IView {
             frame.setSize(400, 400);
             frame.setResizable(false);
 
-            enterCategoryLbl = new JLabel("Enter new category");
+            JLabel enterCategoryLbl = new JLabel("Enter new category");
 
             newCategoryField = new JTextField(20);
 
-            newCategoryField.setFont(new Font("Ariel", Font.PLAIN, 16));
+            newCategoryField.setFont(new Font("Calibri", Font.PLAIN, 16));
             newCategoryField.setMaximumSize(new Dimension(250, 30));
 
-            enterCategoryLbl.setFont(new Font("Ariel", Font.BOLD, 20));
+            enterCategoryLbl.setFont(new Font("Calibri", Font.BOLD, 20));
 
             submitBtn = new JButton("Submit");
             submitBtn.addActionListener(new ActionListener() {
@@ -800,17 +785,16 @@ public class View implements IView {
                 public void actionPerformed(ActionEvent e) {
                     message.setText("");
                     vm.addCategory(new Category(newCategoryField.getText()));
-
                 }
             });
 
-            submitBtn.setFont(new Font("Ariel", Font.PLAIN, 16));
+            submitBtn.setFont(new Font("Calibri", Font.PLAIN, 16));
 
             enterCategoryLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
             newCategoryField.setAlignmentX(Component.CENTER_ALIGNMENT);
             submitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            addCategoryPnl = new JPanel();
+            JPanel addCategoryPnl = new JPanel();
             addCategoryPnl.add(enterCategoryLbl);
             addCategoryPnl.add(newCategoryField);
             addCategoryPnl.add(submitBtn);
@@ -837,21 +821,41 @@ public class View implements IView {
         }
 
         /**
-         * This function gets a map <String, Intenger> between category and costs
+         * This function gets a map <String, Double> between category and costs
          */
         public void displayPieChart(Map map) {
-            frame = new JFrame("Pie Chart");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(700, 700);
-            frame.addWindowListener(new WindowAdapter() {
+
+            DefaultPieDataset dataset = new DefaultPieDataset();
+
+            for (Object key : map.keySet()) {
+                dataset.setValue((String) key, (Double) map.get(key));
+            }
+
+            JFreeChart chart = ChartFactory.createPieChart("pie chart", dataset, true, true, false);
+
+            ChartFrame pieFrame = new ChartFrame("pie chart", chart);
+
+            pieFrame.setSize(600, 600);
+            JButton backBtn = new JButton("Back Home");
+            backBtn.addActionListener(new ActionListener() {
                 @Override
-                public void windowClosing(WindowEvent e) {
-                    System.exit(0);
+                public void actionPerformed(ActionEvent e) {
+                    pieFrame.dispose();
+                    ApplicationUI.this.mainFrame.setVisible(true);
                 }
             });
-            frame.setResizable(false);
+
+            backHomePnl = new JPanel();
+            backHomePnl.setLayout(new BorderLayout());
+            backHomePnl.add(backBtn, BorderLayout.WEST);
+
+            pieFrame.add(backHomePnl, BorderLayout.SOUTH);
+            pieFrame.setVisible(true);
         }
 
+        /**
+         * This function displays the feedback messages at the view from the model
+         */
         public void showMessage(String text) {
             if (SwingUtilities.isEventDispatchThread()) {
                 message.setText(text);
@@ -862,11 +866,12 @@ public class View implements IView {
                         message.setText(text);
                     }
                 });
-
             }
         }
 
-
+        /**
+         * This function creates the table deplaying the retrived data in a table
+         */
         public void generateTable(CostItem[] items) {
 
             String[][] data = new String[items.length][6];
@@ -882,7 +887,7 @@ public class View implements IView {
 
             String[] columnNames = {"Id", "Date", "Category", "Currency", "Amount", "Description"};
 
-            costsTable = new JTable(data, columnNames);
+            JTable costsTable = new JTable(data, columnNames);
             costsTable.getColumnModel().getColumn(0).setPreferredWidth(160);
             costsTable.getColumnModel().getColumn(1).setPreferredWidth(160);
             costsTable.getColumnModel().getColumn(2).setPreferredWidth(200);
@@ -891,9 +896,8 @@ public class View implements IView {
             costsTable.getColumnModel().getColumn(5).setPreferredWidth(720);
 
             sp = new JScrollPane(costsTable);
-            sp.setSize(700,400);
+            sp.setSize(700, 400);
             costsTable.setEnabled(false);
-
 
             dataPnl.add(sp);
 
@@ -901,10 +905,11 @@ public class View implements IView {
             frame.getContentPane().repaint();
             frame.validate();
             frame.repaint();
-
         }
 
-
+        /**
+         * This function displays the rerived data in a list
+         */
         public void showItems(CostItem[] items) {
             if (SwingUtilities.isEventDispatchThread()) {
                 this.generateTable(items);
@@ -915,7 +920,32 @@ public class View implements IView {
                         ApplicationUI.this.generateTable(items);
                     }
                 });
+            }
+        }
 
+        /**
+         * This function displays the cateogries retrived from the Data base
+         */
+        public void showCategories(List<Category> categories) {
+            for (Category cat : categories) {
+                this.categories.addItem(cat.toString());
+            }
+
+        }
+
+        /**
+         * This gets the cateogires in the ui
+         */
+        public void setCategories(List<Category> categories) {
+            if (SwingUtilities.isEventDispatchThread()) {
+                this.showCategories(categories);
+            } else {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        ApplicationUI.this.showCategories(categories);
+                    }
+                });
             }
         }
     }
